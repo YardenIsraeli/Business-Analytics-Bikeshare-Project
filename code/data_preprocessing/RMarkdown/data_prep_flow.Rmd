@@ -1,0 +1,64 @@
+---
+title: "data_prep_flow"
+author: "yarden"
+date: "March 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+First let's present our raw data on bike trips (taken from Big Query)
+```{r}
+raw_data_trips = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\dataSets\\raw_data\\bikeshare_trips_full.csv", header=TRUE, as.is=TRUE, na.strings=c("NA", ".", ""))
+str(raw_data_trips)
+```
+And let's present our raw data on bike stations (taken from Big Query)
+```{r}
+raw_data_stations = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\dataSets\\raw_data\\bikeshare_stations_full.csv", header=TRUE, as.is=TRUE, na.strings=c("NA", ".", ""))
+str(raw_data_stations)
+```
+
+Now let's present our raw data for San Francisco Bay Area (merge of the two above)
+```{r}
+raw_data_sanFran = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\dataSets\\san_francisco_data\\sanFran_full.csv", as.is = TRUE)
+str(raw_data_sanFran[-c(1,2)])
+```
+
+Set dates, duration & add columns of day, month, year, weekend, hour
+(from data_preprocessing.R)
+```{r}
+train_improved = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\dataSets\\san_francisco_data\\sanFran_train_extended.csv", as.is = TRUE)
+train_improved = train_improved[-c(1,2)]
+test_improved = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\dataSets\\san_francisco_data\\sanFran_test_extended.csv", as.is = TRUE)
+test_improved = test_improved[-c(1,2,3,25)]
+improved_data = rbind(train_improved,test_improved)
+str(improved_data)
+```
+
+Add minimum distances between each station to transportation interest points (bart, calltrain, ferry)
+(from Script1.R)
+```{r}
+train_improved1 = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\train4tree_withPrediction_num.csv", as.is = TRUE)
+test_improved1 = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\test4tree_withPrediction_num.csv", as.is = TRUE)
+data_withTransport = rbind(train_improved1,test_improved1)
+str(data_withTransport)
+```
+
+Convert end-station locations to UTM coordinate system
+(from Script2.R)
+```{r}
+train_improved2 = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\trainUTM.csv", as.is = TRUE)
+test_improved2 = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\testUTM.csv", as.is = TRUE)
+data_UTM = rbind(train_improved2,test_improved2)
+str(data_UTM)
+```
+
+Filter data to 2016 & suscribers with legal zip code only
+(from Script3.R)
+```{r}
+train = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\trainSuscribers2016_4RT1.csv", as.is = TRUE)
+test = read.csv("C:\\Users\\User\\Dropbox\\IDC\\Courses\\BusinessAnalytics\\project\\bike\\scriptsFlowR\\dataSets\\testSuscribers2016_4RT1.csv", as.is = TRUE)
+data_2016 = rbind(train,test)
+str(data_2016)
+```
